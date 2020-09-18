@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @ConfigurationProperties(prefix = "baidu")
-public class BaiduConfig {
+public class BaiduConfigProperty {
 
     /** 百度App Id */
     private String appid;
