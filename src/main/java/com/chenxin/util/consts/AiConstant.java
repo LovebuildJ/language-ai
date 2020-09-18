@@ -1,4 +1,4 @@
-package com.chenxin.util;
+package com.chenxin.util.consts;
 
 /**
  * @Description AI 常量类
@@ -15,4 +15,7 @@ public final class AiConstant {
 
     /** token 存储的key 值 */
     public static final String TOKEN_KEY = "accessToken";
+
+    /** access 为必传参数, 此为参数名称 */
+    public static final String URL_TOKEN_NAME = "access_token";
 }

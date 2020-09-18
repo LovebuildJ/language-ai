@@ -7,8 +7,8 @@ package com.chenxin.base;
  */
 public interface BaseErrorInterface {
 
-    /** 错误码 */
+    /** 状态码 */
     String code();
-    /** 错误描述 */
+    /** 状态描述 */
     String msg();
 }

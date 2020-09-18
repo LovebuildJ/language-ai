@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.chenxin.base.BaseAuth;
 import com.chenxin.config.BaiduConfigProperty;
 import com.chenxin.model.dto.BaiDuAuthOut;
-import com.chenxin.util.AiConstant;
+import com.chenxin.util.consts.AiConstant;
 import com.chenxin.util.auth.AuthContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

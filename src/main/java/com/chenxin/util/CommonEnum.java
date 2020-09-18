@@ -11,10 +11,13 @@ public enum CommonEnum implements BaseErrorInterface{
 
     // 数据操作错误定义
     SUCCESS("200", "成功!"),
+    REQ_URL_ERROR("300","请求地址错误!"),
     BODY_NOT_MATCH("400","请求的数据格式不符!"),
     SIGNATURE_NOT_MATCH("401","请求的数字签名不匹配!"),
     TOKEN_ERROR("402","获取access token 失败!"),
     NOT_FOUND("404", "未找到该资源!"),
+    TOKEN_NOT_FOUND("406","找不到access token!"),
+    PARAM_ERROR("407","参数错误!"),
     INTERNAL_SERVER_ERROR("500", "服务器内部错误!"),
     SERVER_BUSY("503","服务器正忙，请稍后再试!")
     ;
