@@ -81,8 +81,9 @@ public class LexerService extends BaseAuth{
                 String pos = item.getPos();
                 if (StrUtil.isBlank(pos)) {
                     if (posList.contains(pos)) {
-                        // 替换成同义词
+                        // 替换成同义词 TODO
 
+                        String word = item.getItem();
 
                     }
                 }
