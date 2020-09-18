@@ -15,6 +15,8 @@ import com.chenxin.util.consts.AiConstant;
 import com.chenxin.util.consts.LexerConstants;
 import com.chenxin.util.http.BaiDuUrl;
 import com.chenxin.util.http.HttpHeader;
+import com.chenxin.util.nlp.SimilarWords;
+import com.hankcs.hanlp.dictionary.CoreSynonymDictionary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,8 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Description 词法分析
@@ -63,9 +64,9 @@ public class LexerService extends BaseAuth{
     }
 
     /**
-     * 切割句子, 获取需要的词义
+     * 切割句子, 同义词替换
      */
-    public void sliceSentence(LexerOut lexerOut) {
+    public String sliceSentence(LexerOut lexerOut) {
         if (lexerOut == null) {
             throw new BizException(CommonEnum.PARAM_ERROR);
         }
@@ -74,6 +75,7 @@ public class LexerService extends BaseAuth{
         String[] wordPos = {LexerConstants.A,LexerConstants.N,LexerConstants.V,LexerConstants.AD,LexerConstants.VD};
         List<String> posList = Arrays.asList(wordPos);
 
+        StringBuilder builder = new StringBuilder();
         List<LexerItemBo> items = lexerOut.getItems();
         if (CollUtil.isNotEmpty(items)) {
             for (LexerItemBo item : items) {
@@ -81,14 +83,52 @@ public class LexerService extends BaseAuth{
                 String pos = item.getPos();
                 if (StrUtil.isBlank(pos)) {
                     if (posList.contains(pos)) {
-                        // 替换成同义词 TODO
+                        String replaceWord = null;
+                        // 替换成同义词
+                        String sourceWord = item.getItem();
+                        // 加载同义词库
+                        List<String> similarWords = SimilarWords.loadWords();
+                        // 查找到的同义词
+                        List<String> distanceList = new ArrayList<>();
+                        // 计算并且替换
+                        for (String similarWord : similarWords) {
+                            // 计算与词库中同义词的距离
+                            long distance = CoreSynonymDictionary.distance(sourceWord, similarWord);
+                            if (distance == 0) {
+                                if (!sourceWord.equals(similarWord)) {
+                                    // 添加排除自己的同义词
+                                    distanceList.add(similarWord);
+                                }
+                            }
+                        }
 
-                        String word = item.getItem();
+                        if (distanceList.size()>0) {
+                            if (distanceList.size() == 1) {
+                                replaceWord = distanceList.get(distanceList.size());
+                            }else {
+                                // 多个同义词,随机抽取一个元素
+                                Random random = new Random();
+                                int n = random.nextInt(distanceList.size());
+                                replaceWord = distanceList.get(n);
+                            }
+                        }
+
+                        // 句子重组
+                        if (StrUtil.isBlank(replaceWord)) {
+                            builder.append(sourceWord);
+                        }else {
+                            builder.append(replaceWord);
+                        }
 
                     }
+                }else {
+                    builder.append(item.getItem());
                 }
+
             }
         }
+
+        return builder.toString();
     }
 
 }

@@ -5,6 +5,7 @@ import com.chenxin.model.dto.BaiDuAuthOut;
 import com.chenxin.model.dto.LexerOut;
 import com.chenxin.model.dto.TextDto;
 import com.chenxin.service.LexerService;
+import com.hankcs.hanlp.dictionary.CoreSynonymDictionary;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,4 +34,17 @@ class AiApplicationTests {
 		System.out.println(lexerOut);
 	}
 
+	/**
+	 * 计算词义的距离
+	 */
+	@Test
+	void calculateWordLength() {
+		String[] array = {"香蕉","苹果","菠萝","足球","窗户"};
+		for (String a : array) {
+			for (String b : array) {
+				System.out.println(a + "\t" + b + "\t之间的距离是\t" + CoreSynonymDictionary.distance(a, b));
+			}
+		}
+
+	}
 }

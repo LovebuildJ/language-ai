@@ -75,6 +75,12 @@
 			<artifactId>hutool-all</artifactId>
 			<version>5.2.5</version>
 		</dependency>
+		<!-- hanLP 语言处理 -->
+		<dependency>
+			<groupId>com.hankcs</groupId>
+			<artifactId>hanlp</artifactId>
+			<version>portable-1.7.8</version>
+		</dependency>
 		<!-- 百度智能Api -->
 		<!-- https://mvnrepository.com/artifact/com.baidu.aip/java-sdk -->
 		<dependency>
