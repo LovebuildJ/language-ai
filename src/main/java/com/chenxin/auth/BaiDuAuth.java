@@ -5,7 +5,7 @@ import com.chenxin.base.BaseAuth;
 import com.chenxin.config.BaiduConfigProperty;
 import com.chenxin.model.dto.BaiDuAuthOut;
 import com.chenxin.util.AiConstant;
-import com.chenxin.util.AuthContainer;
+import com.chenxin.util.auth.AuthContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

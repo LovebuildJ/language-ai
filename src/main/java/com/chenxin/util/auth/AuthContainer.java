@@ -1,4 +1,4 @@
-package com.chenxin.util;
+package com.chenxin.util.auth;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
