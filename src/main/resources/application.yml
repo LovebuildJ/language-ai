@@ -1,6 +1,9 @@
 # ---------------------------------------------  Server Port ------------------------------------------------------- #
 server:
   port: 8080
+  servlet:
+    context-path: /${spring.application.name}
+
 
 spring:
 # --------------------------------------------- Database use mysql5.5+    -----------------------------------#
@@ -9,6 +12,8 @@ spring:
     url: jdbc:mysql://localhost:3306/book_manager?characterEncoding=utf-8&useSSL=true&serverTimezone=Asia/Shanghai
     username: root
     password: root
+  application:
+    name: ai
 
 # ---------------------------------------------  JPA ------------------------------------------------------- #
 #  jpa:

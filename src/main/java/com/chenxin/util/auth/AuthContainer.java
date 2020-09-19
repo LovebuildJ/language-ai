@@ -96,6 +96,35 @@ public class AuthContainer {
         return null;
     }
 
+
+    /**
+     * 获取auth中的token信息
+     * @param key 元素键值
+     */
+    public static String getAuthToken(String key) {
+        if (StrUtil.isBlank(key)) {
+            return null;
+        }
+
+        if (!authMap.containsKey(key)) {
+            return null;
+        }
+
+        // 清查并清理过期缓存
+        if (checkAndClearKey(key)) {
+            return null;
+        }
+
+        Object o = authMap.get(key);
+        if (o instanceof BaiDuAuthOut) {
+            BaiDuAuthOut out = (BaiDuAuthOut) o;
+            return out.getAccess_token();
+        }
+
+        return null;
+    }
+
+
     /**
      * 检查并清理过期缓存
      * @param key 缓存键值
@@ -113,5 +142,13 @@ public class AuthContainer {
         }
 
         return false;
+    }
+
+    /**
+     * 是否存在键
+     * @param key 键
+     */
+    public static boolean isContains(String key) {
+        return StrUtil.isNotBlank(key)&&authMap.containsKey(key);
     }
 }

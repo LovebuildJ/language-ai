@@ -81,7 +81,7 @@ public class LexerService extends BaseAuth{
             for (LexerItemBo item : items) {
                 // 形容词, 动词, 名词(特有名词, 专属名词不进行处理)
                 String pos = item.getPos();
-                if (StrUtil.isBlank(pos)) {
+                if (StrUtil.isNotBlank(pos)) {
                     if (posList.contains(pos)) {
                         String replaceWord = null;
                         // 替换成同义词
@@ -120,6 +120,8 @@ public class LexerService extends BaseAuth{
                             builder.append(replaceWord);
                         }
 
+                    }else {
+                        builder.append(item.getItem());
                     }
                 }else {
                     builder.append(item.getItem());

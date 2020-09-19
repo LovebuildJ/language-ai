@@ -49,6 +49,7 @@ public class BaiDuAuth extends BaseAuth{
             baiDuAuthOut = JSON.parseObject(body, BaiDuAuthOut.class);
             // 存入认证容器, 避免反复获取
             AuthContainer.add(AiConstant.TOKEN_KEY,baiDuAuthOut,Long.parseLong(baiDuAuthOut.getExpires_in()));
+            return baiDuAuthOut;
         }
 
         return new BaiDuAuthOut();

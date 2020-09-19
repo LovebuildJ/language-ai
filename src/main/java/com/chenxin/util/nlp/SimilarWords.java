@@ -22,9 +22,13 @@ public class SimilarWords {
      * 加载词库
      */
     public static List<String> loadWords() {
-        if (list == null) {
-            list = new ArrayList<>(20000);
+        if (list != null&&list.size()!=0) {
+            return list;
         }
+
+        // 初始化2w
+        list = new ArrayList<>(20000);
+        // 使用流读取词库
         InputStream stream = SimilarWords.class.getResourceAsStream("/res/word.txt");
         BufferedReader br = new BufferedReader(new InputStreamReader(stream));
         try {

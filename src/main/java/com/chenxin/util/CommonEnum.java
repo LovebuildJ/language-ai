@@ -18,6 +18,7 @@ public enum CommonEnum implements BaseErrorInterface{
     NOT_FOUND("404", "未找到该资源!"),
     TOKEN_NOT_FOUND("406","找不到access token!"),
     PARAM_ERROR("407","参数错误!"),
+    ANALYSE_WORDS_FAIL("408","分词解析失败!"),
     INTERNAL_SERVER_ERROR("500", "服务器内部错误!"),
     SERVER_BUSY("503","服务器正忙，请稍后再试!")
     ;
