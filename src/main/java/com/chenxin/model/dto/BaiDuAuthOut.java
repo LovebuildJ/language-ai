@@ -1,6 +1,7 @@
 package com.chenxin.model.dto;
 
 import com.chenxin.model.BaiDuError;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 /**
@@ -9,6 +10,7 @@ import lombok.Data;
  * @Author by 尘心
  */
 @Data
+@ApiModel("百度授权相应结果对象")
 public class BaiDuAuthOut extends BaiDuError{
 
     private String refresh_token;
