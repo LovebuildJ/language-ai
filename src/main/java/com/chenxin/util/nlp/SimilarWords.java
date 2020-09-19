@@ -34,7 +34,7 @@ public class SimilarWords {
         try {
             String line = "";
             while ((line = br.readLine())!=null) {
-                System.out.println("加载词库中 >>>>>>>>>>>>>>>>>>>>"+line);
+                System.out.println("加载词库中 【>>>>>>>>>>>>>>>>>>>>】"+line);
                 String[] lineArr = line.split(" ");
                 for (String s : lineArr) {
                     list.add(s.trim());

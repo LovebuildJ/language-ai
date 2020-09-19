@@ -16,4 +16,9 @@ public abstract class BaseAuth {
      * 通用版 词法分析接口地址
      */
     protected static final String NORMAL_LEXER_URL = "https://aip.baidubce.com/rpc/2.0/nlp/v1/lexer";
+
+    /**
+     * DNN语言模型分析接口地址
+     */
+    protected static final String DNN_LAN_MODEL_URL = "https://aip.baidubce.com/rpc/2.0/nlp/v2/dnnlm_cn";
 }

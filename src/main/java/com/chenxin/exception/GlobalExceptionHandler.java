@@ -35,6 +35,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public R nullPointException(HttpServletRequest request,NullPointerException e) {
         logger.error("发生空指针异常！原因是：{}",e.getMessage());
+        e.printStackTrace();
         return R.error(CommonEnum.INTERNAL_SERVER_ERROR);
     }
 

@@ -7,6 +7,7 @@ import com.chenxin.base.BaseAuth;
 import com.chenxin.base.BaseService;
 import com.chenxin.exception.BizException;
 import com.chenxin.model.bo.LexerItemBo;
+import com.chenxin.model.dto.DnnModelOut;
 import com.chenxin.model.dto.LexerOut;
 import com.chenxin.model.dto.TextDto;
 import com.chenxin.util.CommonEnum;
@@ -104,7 +105,7 @@ public class LexerService extends BaseAuth{
 
                         if (distanceList.size()>0) {
                             if (distanceList.size() == 1) {
-                                replaceWord = distanceList.get(distanceList.size());
+                                replaceWord = distanceList.get(0);
                             }else {
                                 // 多个同义词,随机抽取一个元素
                                 Random random = new Random();
@@ -131,6 +132,26 @@ public class LexerService extends BaseAuth{
         }
 
         return builder.toString();
+    }
+
+    /**
+     * DNN语言模型处理
+     */
+    public DnnModelOut analyseDnnModel(TextDto text,String accessToken) {
+        String realUrl = BaiDuUrl.getRealUtf8Url(DNN_LAN_MODEL_URL, accessToken);
+        // 请求参数 , 格式 json
+        String param = JSON.toJSONString(text);
+        // 获取json类型请求头
+        HttpHeaders jsonHeader = HttpHeader.getJsonHeader();
+        HttpEntity<String> httpEntity = new HttpEntity<>(param, jsonHeader);
+        // 请求数据
+        ResponseEntity<String> postForEntity = restTemplate.postForEntity(realUrl, httpEntity, String.class);
+        if (postForEntity.getStatusCode().equals(HttpStatus.OK)) {
+            String body = postForEntity.getBody();
+            return JSON.parseObject(body, DnnModelOut.class);
+        }
+
+        return new DnnModelOut();
     }
 
 }

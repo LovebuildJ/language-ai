@@ -2,12 +2,15 @@ package com.chenxin.controller;
 
 import cn.hutool.core.util.StrUtil;
 import com.chenxin.base.BaseController;
+import com.chenxin.exception.BizException;
 import com.chenxin.model.R;
 import com.chenxin.model.ReqBody;
+import com.chenxin.model.dto.DnnModelOut;
 import com.chenxin.model.dto.LexerOut;
 import com.chenxin.model.dto.TextDto;
 import com.chenxin.service.LexerService;
 import com.chenxin.util.CommonEnum;
+import com.chenxin.util.consts.AiConstant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,9 +63,51 @@ public class LexerController extends BaseController{
             return R.error(CommonEnum.ANALYSE_WORDS_FAIL);
         }
 
-        // DNN语言模型校验 TODO
+        // DNN语言模型校验
+        DnnModelOut out = getPpl(lexerOut,accessToken);
+        if (out == null) {
+            // DNN计算失败, 直接返回原文本
+            return R.success(para.getParams().getText());
+        }
+        // 通顺度
+        double ppl = Double.valueOf(out.getPpl());
+        if (ppl>AiConstant.PPL_LIMIT) {
+            // 语义不通顺 , 重新替换: 十次机会, 超过十次返回原来文本
+            for (int i = 0; i < AiConstant.TRY_COUNT; i++) {
+                DnnModelOut dmo =  getPpl(lexerOut,accessToken);
+                if (dmo!=null) {
+                    String pl = dmo.getPpl();
+                    if (StrUtil.isNotBlank(pl)) {
+                        double p = Double.valueOf(pl);
+                        if (p<AiConstant.PPL_LIMIT) {
+                            // 语句通顺, 跳出循环, 返回
+                            return R.success(dmo.getText());
+                        }
+                    }
+                }
+            }
 
-        return R.success(lexerService.sliceSentence(lexerOut));
+            return R.success(para.getParams().getText());
+        }
+
+        return R.success(out.getText());
     }
 
+
+    private DnnModelOut getPpl(LexerOut lexerOut,String accessToken) {
+        if (lexerOut == null) {
+            throw new BizException(CommonEnum.PARAM_ERROR);
+        }
+        if (StrUtil.isBlank(accessToken)) {
+            throw new BizException(CommonEnum.TOKEN_NOT_FOUND);
+        }
+
+        String replaceResult = lexerService.sliceSentence(lexerOut);
+        if (StrUtil.isNotBlank(replaceResult)) {
+            // DNN语言模型计算通顺度
+            return lexerService.analyseDnnModel(new TextDto(replaceResult),accessToken);
+        }
+
+        return null;
+    }
 }
