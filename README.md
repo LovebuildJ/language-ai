@@ -1,6 +1,37 @@
 # language-ai
 文章AI伪原创，文章自动生成，NLP，自然语言技术处理。项目正在开发中, 请关注核心发行版本发布时间.
 
+## 快速开始
+1. 环境准备：`JDK1.8`, `maven3.6+`, `redis`
+2. 在 `application.yml` 中配置百度AI的相关信息
+```yaml
+
+baidu:
+  appid: 你的app_id
+  appkey: 你的app_key
+  secret: 你的app_secret
+  
+```
+如何获取? 输入`https://ai.baidu.com/tech/nlp_basic`, 点击立即使用, 根据提示一步一步完成即可获得。
+有免费调用额度, 对于个人而言已经够了。
+
+3. 加载词库到redis中, 项目启动后, 发送post请求`http://localhost:8080/ai/command/initRedis` 初始化redis即可
+
+请求参数格式如下：
+```json
+{
+	"appName": "",
+	"params": {
+		"password": "你的用户名",
+		"username": "你的密码"
+	},
+	"sign": "",
+	"timestamp": "",
+	"version": ""
+}
+```
+
+其余参数暂时未作验签, 默认传空串即可
 
 ## 关于词库
 - 使用到的中文同义词词库是哈工大的同义词词林（扩展版)
@@ -32,6 +63,14 @@ HanLP是一系列模型与算法组成的NLP工具包，目标是普及自然语
 - MyBatis ,  复杂数据操作
 - Spring Data Jpa , 简单数据操作
 - SwaggerUI BootstrapSwaggerUI, 在线接口文档, 增强美化, 接口文档导出
+
+## 问题与优化
+Q: 当文本长度稍微大一点的时候，文本变脸就变得十分缓慢， 因为这涉及到将几万的词库加载到内存然后进行词义距离计算
+A：这时候加载词库比对的思路，明显已经不适用了。因此采用高性能的redis数据库，进行词库的存储与读取，极大的提升了同义词的查找效率
+
+Q：当文本过长，百度AI接口会抛出异常
+A：用户端或者服务端做好文本切片的操作
+
 
 ## 其他
 为什么会使用多个NLP项目, 原因是因为最初是想使用百度AI将整个项目完成。 但由于百度自然语言处理API

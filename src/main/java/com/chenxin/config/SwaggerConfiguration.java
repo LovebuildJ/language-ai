@@ -1,9 +1,5 @@
 package com.chenxin.config;
 
-/**
- * Created by 尘心 on 2020/9/19 0019.
- */
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;

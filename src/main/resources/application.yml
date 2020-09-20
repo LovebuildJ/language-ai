@@ -14,7 +14,21 @@ spring:
     password: root
   application:
     name: ai
-
+# --------------------------------------------- Redis NoSQL Database    -----------------------------------#
+  redis:
+#    host: 127.0.0.1
+    host: 192.168.1.3
+    port: 6379
+    timeout: 3000
+    database: 1
+    password:
+    #lettuce连接池配置
+    lettuce:
+      pool:
+        min-idle: 0
+        max-idle: 5
+        max-active: 8
+        max-wait: -1
 # ---------------------------------------------  JPA ------------------------------------------------------- #
 #  jpa:
 #    hibernate:
