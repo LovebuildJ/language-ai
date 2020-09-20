@@ -4,12 +4,14 @@ import com.chenxin.base.BaseController;
 import com.chenxin.model.R;
 import com.chenxin.model.ReqBody;
 import com.chenxin.model.dto.LoginDto;
+import com.chenxin.service.CommandService;
 import com.chenxin.util.CommonEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * 指令接口
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class CommandController extends BaseController{
 
     @Autowired
-    private RedisTemplate redisTemplate;
+    private CommandService commandService;
 
     @ApiOperation("初始化redis数据库")
     @PostMapping("/initRedis")
@@ -38,6 +40,11 @@ public class CommandController extends BaseController{
             return R.error(CommonEnum.USERNAME_PASS_ERRPR);
         }
 
-        return R.success();
+        try {
+            commandService.initRedis();
+        } catch (UnsupportedEncodingException e) {
+            return R.error(CommonEnum.IMPORT_WORDS);
+        }
+        return R.success("初始化词库至redis成功!");
     }
 }

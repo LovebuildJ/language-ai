@@ -19,6 +19,7 @@ import com.chenxin.util.http.HttpHeader;
 import com.chenxin.util.nlp.SimilarWords;
 import com.hankcs.hanlp.dictionary.CoreSynonymDictionary;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,9 @@ public class LexerService extends BaseAuth{
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private RedisTemplate<String,Object> redisTemplate;
 
     /**
      * 将句子按照词义进行切分
@@ -87,30 +91,14 @@ public class LexerService extends BaseAuth{
                         String replaceWord = null;
                         // 替换成同义词
                         String sourceWord = item.getItem();
-                        // 加载同义词库
-                        List<String> similarWords = SimilarWords.loadWords();
-                        // 查找到的同义词
-                        List<String> distanceList = new ArrayList<>();
-                        // 计算并且替换
-                        for (String similarWord : similarWords) {
-                            // 计算与词库中同义词的距离
+                        // 从redis同义词库中查找同义词
+//                        List<String> similarWords = SimilarWords.loadWords();
+                        String similarWord = (String) redisTemplate.opsForValue().get(sourceWord);
+                        if (!StrUtil.isBlank(similarWord)) {
                             long distance = CoreSynonymDictionary.distance(sourceWord, similarWord);
                             if (distance == 0) {
-                                if (!sourceWord.equals(similarWord)) {
-                                    // 添加排除自己的同义词
-                                    distanceList.add(similarWord);
-                                }
-                            }
-                        }
-
-                        if (distanceList.size()>0) {
-                            if (distanceList.size() == 1) {
-                                replaceWord = distanceList.get(0);
-                            }else {
-                                // 多个同义词,随机抽取一个元素
-                                Random random = new Random();
-                                int n = random.nextInt(distanceList.size());
-                                replaceWord = distanceList.get(n);
+                                // 将同义词替换
+                                replaceWord = similarWord;
                             }
                         }
 
