@@ -35,13 +35,19 @@ public class CommandService {
             redisTemplate.delete(keys);
         }
 
+        int suffix = 0;
         // 将词库遍历导入redis
         for (Map.Entry<String, String> entry : map.entrySet()) {
+            String key = EncodeUtil.changeCharset(entry.getKey(),"UTF-8");
+            String value = EncodeUtil.changeCharset(entry.getValue(),"UTF-8");
             // 去除重复键值, 以免发生异常
-            if (!redisTemplate.hasKey(entry.getKey())) {
-                String key = EncodeUtil.changeCharset(entry.getKey(),"UTF-8");
-                String value = EncodeUtil.changeCharset(entry.getValue(),"UTF-8");
+            if (!redisTemplate.hasKey(key)) {
                 redisTemplate.opsForValue().append(key,value);
+            }else {
+                // 相同键值添加后缀
+                key = key+suffix;
+                redisTemplate.opsForValue().append(key,value);
+                suffix++;
             }
         }
     }

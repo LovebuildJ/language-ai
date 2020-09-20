@@ -69,28 +69,30 @@ public class LexerController extends BaseController{
             // DNN计算失败, 直接返回原文本
             return R.success(para.getParams().getText());
         }
-        // 通顺度
-        double ppl = Double.valueOf(out.getPpl());
-        if (ppl>AiConstant.PPL_LIMIT) {
-            // 语义不通顺 , 重新替换: 十次机会, 超过十次返回原来文本
-            for (int i = 0; i < AiConstant.TRY_COUNT; i++) {
-                DnnModelOut dmo =  getPpl(lexerOut,accessToken);
-                if (dmo!=null) {
-                    String pl = dmo.getPpl();
-                    if (StrUtil.isNotBlank(pl)) {
-                        double p = Double.valueOf(pl);
-                        if (p<AiConstant.PPL_LIMIT) {
-                            // 语句通顺, 跳出循环, 返回
-                            return R.success(dmo.getText());
+        if (StrUtil.isNotBlank(out.getPpl())) {
+            // 通顺度
+            double ppl = Double.valueOf(out.getPpl());
+            if (ppl>AiConstant.PPL_LIMIT) {
+                // 语义不通顺 , 重新替换: 十次机会, 超过十次返回原来文本
+                for (int i = 0; i < AiConstant.TRY_COUNT; i++) {
+                    DnnModelOut dmo =  getPpl(lexerOut,accessToken);
+                    if (dmo!=null) {
+                        String pl = dmo.getPpl();
+                        if (StrUtil.isNotBlank(pl)) {
+                            double p = Double.valueOf(pl);
+                            if (p<AiConstant.PPL_LIMIT) {
+                                // 语句通顺, 跳出循环, 返回
+                                return R.success(dmo.getText());
+                            }
                         }
                     }
                 }
-            }
 
-            return R.success(para.getParams().getText());
+                return R.success(para.getParams().getText());
+            }
         }
 
-        return R.success(out.getText());
+        return R.success(out.getText()==null?para.getParams():out.getText());
     }
 
 

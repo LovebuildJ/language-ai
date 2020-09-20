@@ -24,4 +24,7 @@ public final class AiConstant {
 
     /** 重试次数：默认重试50次 */
     public static final int TRY_COUNT = 50;
+
+    /** 键值模糊查询限制条数 */
+    public static final int KEYS_COUNT = 200;
 }

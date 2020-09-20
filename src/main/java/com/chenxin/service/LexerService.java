@@ -19,7 +19,8 @@ import com.chenxin.util.http.HttpHeader;
 import com.chenxin.util.nlp.SimilarWords;
 import com.hankcs.hanlp.dictionary.CoreSynonymDictionary;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -91,14 +92,40 @@ public class LexerService extends BaseAuth{
                         String replaceWord = null;
                         // 替换成同义词
                         String sourceWord = item.getItem();
-                        // 从redis同义词库中查找同义词
-//                        List<String> similarWords = SimilarWords.loadWords();
-                        String similarWord = (String) redisTemplate.opsForValue().get(sourceWord);
-                        if (!StrUtil.isBlank(similarWord)) {
-                            long distance = CoreSynonymDictionary.distance(sourceWord, similarWord);
-                            if (distance == 0) {
-                                // 将同义词替换
-                                replaceWord = similarWord;
+                        // 从redis同义词库中查找所有同义词
+                        List<String> keys = new ArrayList<>();
+                        Cursor<String> cursor = scan(redisTemplate,sourceWord+"*",AiConstant.KEYS_COUNT);
+                        while (cursor.hasNext()) {
+                            keys.add(cursor.next());
+                        }
+
+                        List<String> similarWordList = new ArrayList<>();
+                        for (String key : keys) {
+                            String similarWord = (String) redisTemplate.opsForValue().get(key);
+                            similarWordList.add(similarWord);
+                        }
+
+                        List<String> similarList = new ArrayList<>();
+                        for (String word : similarWordList) {
+                            if (!StrUtil.isBlank(word)) {
+                                long distance = CoreSynonymDictionary.distance(sourceWord, word);
+                                if (distance == 0) {
+                                    // 将符合要求的同义词收集
+                                    similarList.add(word);
+                                }
+                            }
+                        }
+
+                        if (similarList.size()!=0) {
+                            if (similarList.size() == 1) {
+                                replaceWord = similarList.get(0);
+                            }else {
+                                Random rand = new Random();
+                                String randomElement = similarList.get(rand.nextInt(similarList.size()));
+                                if (!sourceWord.equals(randomElement)) {
+                                    // 除去自己, 从最相似的词语当中随机取一个
+                                    replaceWord = randomElement;
+                                }
                             }
                         }
 
@@ -142,4 +169,13 @@ public class LexerService extends BaseAuth{
         return new DnnModelOut();
     }
 
+    /**
+     * redis扫描相似键值
+     */
+    private Cursor<String> scan(RedisTemplate stringRedisTemplate, String match, int count){
+        ScanOptions scanOptions = ScanOptions.scanOptions().match(match).count(count).build();
+        RedisSerializer<String> redisSerializer = (RedisSerializer<String>) stringRedisTemplate.getKeySerializer();
+        return (Cursor) stringRedisTemplate.executeWithStickyConnection((RedisCallback) redisConnection ->
+                new ConvertingCursor<>(redisConnection.scan(scanOptions), redisSerializer::deserialize));
+    }
 }
