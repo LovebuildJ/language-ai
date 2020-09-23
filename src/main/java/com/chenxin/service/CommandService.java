@@ -1,6 +1,7 @@
 package com.chenxin.service;
 
 import com.chenxin.exception.BizException;
+import com.chenxin.model.bo.MapBo;
 import com.chenxin.util.CommonEnum;
 import com.chenxin.util.encode.EncodeUtil;
 import com.chenxin.util.nlp.SimilarWords;
@@ -9,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,8 +26,8 @@ public class CommandService {
 
     public void initRedis() throws UnsupportedEncodingException {
         // 加载词库
-        Map<String,String> map = SimilarWords.loadWordsMap();
-        if (map == null||map.size() == 0) {
+        List<MapBo<String, String>> mapBos = SimilarWords.loadWordsMap();
+        if (mapBos == null||mapBos.size() == 0) {
             throw new BizException(CommonEnum.IMPORT_WORDS);
         }
         // 初始化redis, 先清空所有键值
@@ -37,9 +39,10 @@ public class CommandService {
 
         int suffix = 0;
         // 将词库遍历导入redis
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            String key = EncodeUtil.changeCharset(entry.getKey(),"UTF-8");
-            String value = EncodeUtil.changeCharset(entry.getValue(),"UTF-8");
+        for (MapBo<String, String> map : mapBos) {
+            String key = EncodeUtil.changeCharset(map.getKey(),"UTF-8");
+            String value = EncodeUtil.changeCharset(map.getVal(),"UTF-8");
+
             // 去除重复键值, 以免发生异常
             if (!redisTemplate.hasKey(key)) {
                 redisTemplate.opsForValue().append(key,value);
@@ -50,5 +53,6 @@ public class CommandService {
                 suffix++;
             }
         }
+
     }
 }

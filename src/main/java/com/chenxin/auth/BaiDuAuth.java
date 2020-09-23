@@ -7,6 +7,7 @@ import com.chenxin.model.dto.BaiDuAuthOut;
 import com.chenxin.util.consts.AiConstant;
 import com.chenxin.util.auth.AuthContainer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ public class BaiDuAuth extends BaseAuth{
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private BaiduConfigProperty baiduConfigProperty;
@@ -49,6 +53,14 @@ public class BaiDuAuth extends BaseAuth{
             baiDuAuthOut = JSON.parseObject(body, BaiDuAuthOut.class);
             // 存入认证容器, 避免反复获取
             AuthContainer.add(AiConstant.TOKEN_KEY,baiDuAuthOut,Long.parseLong(baiDuAuthOut.getExpires_in()));
+            // 存入一份到redis中
+            Boolean bool = redisTemplate.hasKey(AiConstant.TOKEN_KEY);
+            if (bool) {
+                redisTemplate.delete(AiConstant.TOKEN_KEY);
+                // 存储
+                redisTemplate.opsForValue().set(AiConstant.TOKEN_KEY,baiDuAuthOut.getAccess_token());
+            }
+
             return baiDuAuthOut;
         }
 

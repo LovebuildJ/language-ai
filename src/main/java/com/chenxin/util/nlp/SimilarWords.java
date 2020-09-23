@@ -1,5 +1,7 @@
 package com.chenxin.util.nlp;
 
+import com.chenxin.model.bo.MapBo;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,30 +55,30 @@ public class SimilarWords {
     /**
      * 加载词库
      */
-    public static Map<String,String> loadWordsMap() {
-        if (map != null&&map.size()!=0) {
-            return map;
-        }
-
-        // 初始化2w
-        map = new HashMap<>(20000);
+    public static List<MapBo<String,String>> loadWordsMap() {
+        List<MapBo<String,String>> mapList = new ArrayList<>(20000);
         // 使用流读取词库
         InputStream stream = SimilarWords.class.getResourceAsStream("/res/word.txt");
         BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+
         try {
+
             String line = "";
             while ((line = br.readLine())!=null) {
                 System.out.println("加载词库中 【>>>>>>>>>>>>>>>>>>>>】"+line);
                 String[] lineArr = line.split(" ");
                 // 以防一行有三个词的情况
                 if (lineArr.length == 2) {
-                    map.put(lineArr[0].trim(),lineArr[1].trim());
+                    MapBo<String, String> mapBo = new MapBo<>();
+                    mapBo.setKey(lineArr[0].trim());
+                    mapBo.setVal(lineArr[1].trim());
+                    mapList.add(mapBo);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return map;
+        return mapList;
     }
 }

@@ -18,6 +18,7 @@ import com.chenxin.util.http.BaiDuUrl;
 import com.chenxin.util.http.HttpHeader;
 import com.chenxin.util.nlp.SimilarWords;
 import com.hankcs.hanlp.dictionary.CoreSynonymDictionary;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.serializer.RedisSerializer;
@@ -35,6 +36,7 @@ import java.util.*;
  * @Date 2020/9/18 15:38
  * @Author by 尘心
  */
+@Slf4j
 @Service
 public class LexerService extends BaseAuth{
 
@@ -52,6 +54,8 @@ public class LexerService extends BaseAuth{
         if (text == null) {
             throw new BizException(CommonEnum.BODY_NOT_MATCH);
         }
+
+        log.info("正在切词中...");
 
         String realUrl = BaiDuUrl.getRealUtf8Url(NORMAL_LEXER_URL, accessToken);
         // 请求参数 , 格式 json
@@ -77,6 +81,8 @@ public class LexerService extends BaseAuth{
             throw new BizException(CommonEnum.PARAM_ERROR);
         }
 
+        log.info("正在进行同义词替换...");
+
         // 需要从处理的词性数组
         String[] wordPos = {LexerConstants.A,LexerConstants.N,LexerConstants.V,LexerConstants.AD,LexerConstants.VD};
         List<String> posList = Arrays.asList(wordPos);
@@ -99,14 +105,16 @@ public class LexerService extends BaseAuth{
                             keys.add(cursor.next());
                         }
 
-                        List<String> similarWordList = new ArrayList<>();
+//                        List<String> similarWordList = new ArrayList<>();
+                        // 使用set, 去除相同的词, 提升替换效率
+                        TreeSet<String> set = new TreeSet<>();
                         for (String key : keys) {
                             String similarWord = (String) redisTemplate.opsForValue().get(key);
-                            similarWordList.add(similarWord);
+                            set.add(similarWord);
                         }
 
                         List<String> similarList = new ArrayList<>();
-                        for (String word : similarWordList) {
+                        for (String word : set) {
                             if (!StrUtil.isBlank(word)) {
                                 long distance = CoreSynonymDictionary.distance(sourceWord, word);
                                 if (distance == 0) {
@@ -114,6 +122,9 @@ public class LexerService extends BaseAuth{
                                     similarList.add(word);
                                 }
                             }
+
+                            log.info("找到如下同义词!"+word);
+
                         }
 
                         if (similarList.size()!=0) {
@@ -126,6 +137,7 @@ public class LexerService extends BaseAuth{
                                     // 除去自己, 从最相似的词语当中随机取一个
                                     replaceWord = randomElement;
                                 }
+                                log.info("随机从相似词中取一个进行替换~");
                             }
                         }
 
@@ -153,6 +165,7 @@ public class LexerService extends BaseAuth{
      * DNN语言模型处理
      */
     public DnnModelOut analyseDnnModel(TextDto text,String accessToken) {
+        log.info("正在进行DNN语言模型校验...");
         String realUrl = BaiDuUrl.getRealUtf8Url(DNN_LAN_MODEL_URL, accessToken);
         // 请求参数 , 格式 json
         String param = JSON.toJSONString(text);

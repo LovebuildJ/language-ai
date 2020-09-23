@@ -23,8 +23,8 @@ public final class AiConstant {
     public static final double PPL_LIMIT = 1000.00d;
 
     /** 重试次数：默认重试50次 */
-    public static final int TRY_COUNT = 50;
+    public static final int TRY_COUNT = 10;
 
     /** 键值模糊查询限制条数 */
-    public static final int KEYS_COUNT = 200;
+    public static final int KEYS_COUNT = 20;
 }
