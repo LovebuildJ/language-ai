@@ -21,6 +21,7 @@ public enum CommonEnum implements BaseErrorInterface{
     ANALYSE_WORDS_FAIL("408","分词解析失败!"),
     USERNAME_PASS_ERRPR("430","用户名或密码错误!"),
     IMPORT_WORDS("431","导入词库失败!"),
+    TEXT_NULL("432","输入的文本不能为空!"),
     INTERNAL_SERVER_ERROR("500", "服务器内部错误!"),
     SERVER_BUSY("503","服务器正忙，请稍后再试!")
     ;

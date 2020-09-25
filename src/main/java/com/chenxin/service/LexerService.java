@@ -182,6 +182,51 @@ public class LexerService extends BaseAuth{
         return new DnnModelOut();
     }
 
+
+    /**
+     * 整个文章替换
+     */
+    public String replaceParagraph(TextDto text,String accessToken) {
+        log.info("正在进行文章替换 ...");
+        checkText(text);
+        checkAccessToken(accessToken);
+        // 文章
+        String article = text.getText();
+
+
+        return null;
+    }
+
+
+    /**
+     * 校验文本
+     * @param text 文本对象
+     * @return 不为空返回true
+     */
+    private boolean checkText(TextDto text) {
+        if (text == null) {
+            throw new BizException(CommonEnum.TEXT_NULL);
+        }
+        // 判断内容
+        String article = text.getText();
+        if (StrUtil.isBlank(article)) {
+            throw new BizException(CommonEnum.TEXT_NULL);
+        }
+        return true;
+    }
+
+    /**
+     * 校验access token
+     * @param accessToken 请求令牌
+     * @return 令牌不为空 返回true
+     */
+    private boolean checkAccessToken(String accessToken) {
+        if (StrUtil.isBlank(accessToken)) {
+            throw new BizException(CommonEnum.TOKEN_NOT_FOUND);
+        }
+        return true;
+    }
+
     /**
      * redis扫描相似键值
      */
