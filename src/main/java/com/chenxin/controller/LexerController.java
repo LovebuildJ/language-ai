@@ -48,7 +48,7 @@ public class LexerController extends BaseController{
     }
 
     @ApiOperation("词义相似度计算")
-    @PostMapping("/lexerText")
+    @PostMapping("/wordSimilar")
     public R wordSimilar(@RequestBody ReqBody<SimilarWordDto> para) {
         return R.success(lexerService.calculateWordSimilarScore(para.getParams()));
     }

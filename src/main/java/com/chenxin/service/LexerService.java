@@ -220,6 +220,7 @@ public class LexerService extends BaseAuth{
         String article = text.getText();
 
 
+
         return null;
     }
 
