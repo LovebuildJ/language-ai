@@ -7,6 +7,7 @@ import com.chenxin.model.R;
 import com.chenxin.model.ReqBody;
 import com.chenxin.model.dto.DnnModelOut;
 import com.chenxin.model.dto.LexerOut;
+import com.chenxin.model.dto.SimilarWordDto;
 import com.chenxin.model.dto.TextDto;
 import com.chenxin.service.LexerService;
 import com.chenxin.util.CommonEnum;
@@ -31,7 +32,7 @@ public class LexerController extends BaseController{
     @Autowired
     private LexerService lexerService;
 
-    @ApiOperation("文本分词")
+    @ApiOperation("词义分析(分词)")
     @PostMapping("/lexerText")
     public R lexerText(@RequestBody ReqBody<TextDto> para) {
         if (para == null||para.getParams() == null) {
@@ -44,6 +45,18 @@ public class LexerController extends BaseController{
         }
 
         return R.success(lexerService.analyseLexer(para.getParams(),accessToken));
+    }
+
+    @ApiOperation("词义相似度计算")
+    @PostMapping("/lexerText")
+    public R wordSimilar(@RequestBody ReqBody<SimilarWordDto> para) {
+        return R.success(lexerService.calculateWordSimilarScore(para.getParams()));
+    }
+
+    @ApiOperation("DNN语言模型计算句子通顺度")
+    @PostMapping("/dnn")
+    public R getSentenceDnn(@RequestBody ReqBody<TextDto> para) {
+        return R.success(lexerService.analyseDnnModel(para.getParams(),getAccessToken()));
     }
 
     @ApiOperation("文本'变脸' 即伪原创")

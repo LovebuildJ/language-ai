@@ -7,9 +7,7 @@ import com.chenxin.base.BaseAuth;
 import com.chenxin.base.BaseService;
 import com.chenxin.exception.BizException;
 import com.chenxin.model.bo.LexerItemBo;
-import com.chenxin.model.dto.DnnModelOut;
-import com.chenxin.model.dto.LexerOut;
-import com.chenxin.model.dto.TextDto;
+import com.chenxin.model.dto.*;
 import com.chenxin.util.CommonEnum;
 import com.chenxin.util.auth.AuthContainer;
 import com.chenxin.util.consts.AiConstant;
@@ -19,6 +17,7 @@ import com.chenxin.util.http.HttpHeader;
 import com.chenxin.util.nlp.SimilarWords;
 import com.hankcs.hanlp.dictionary.CoreSynonymDictionary;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.serializer.RedisSerializer;
@@ -160,6 +159,33 @@ public class LexerService extends BaseAuth{
 
         return builder.toString();
     }
+
+
+    /**
+     *  计算词义相似度
+     * @param word 词语对象
+     */
+    public SimilarWordOut calculateWordSimilarScore(SimilarWordDto word) {
+        log.info("正在计算两个单词的相似度得分");
+        if (word == null) {
+            throw new BizException(CommonEnum.BODY_NOT_MATCH);
+        }
+        // 获取源词语
+        String source =  word.getSource();
+        // 获取需要计算的目标词语
+        String target = word.getTarget();
+        if (StrUtil.isBlank(source)||StrUtil.isBlank(target)) {
+            throw new BizException(CommonEnum.WORD_NULL);
+        }
+        // 使用NLP计算相似度得分
+        long score = CoreSynonymDictionary.distance(source, target);
+        SimilarWordOut swo = new SimilarWordOut();
+        BeanUtils.copyProperties(word,swo);
+        swo.setScore(score);
+        // 返回得分
+        return swo;
+    }
+
 
     /**
      * DNN语言模型处理
