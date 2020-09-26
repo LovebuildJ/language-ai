@@ -25,10 +25,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * @Description 词法分析
@@ -75,13 +79,15 @@ public class LexerService extends BaseAuth{
     /**
      * 切割句子, 同义词替换
      */
-    public String sliceSentence(LexerOut lexerOut) {
+    public ReplaceTextOut sliceSentence(LexerOut lexerOut) {
         if (lexerOut == null) {
             throw new BizException(CommonEnum.PARAM_ERROR);
         }
 
         log.info("正在进行同义词替换...");
 
+        // 替换词数统计
+        int replaceCount = 0;
         // 需要从处理的词性数组
         String[] wordPos = {LexerConstants.A,LexerConstants.N,LexerConstants.V,LexerConstants.AD,LexerConstants.VD};
         List<String> posList = Arrays.asList(wordPos);
@@ -104,7 +110,6 @@ public class LexerService extends BaseAuth{
                             keys.add(cursor.next());
                         }
 
-//                        List<String> similarWordList = new ArrayList<>();
                         // 使用set, 去除相同的词, 提升替换效率
                         TreeSet<String> set = new TreeSet<>();
                         for (String key : keys) {
@@ -138,6 +143,8 @@ public class LexerService extends BaseAuth{
                                 }
                                 log.info("随机从相似词中取一个进行替换~");
                             }
+
+                            replaceCount++;
                         }
 
                         // 句子重组
@@ -157,7 +164,13 @@ public class LexerService extends BaseAuth{
             }
         }
 
-        return builder.toString();
+        // 封装返回对象
+        ReplaceTextOut out = new ReplaceTextOut();
+        out.setSource(lexerOut.getText());
+        out.setReplace(builder.toString());
+        out.setReplaceCount(replaceCount);
+
+        return out;
     }
 
 
@@ -212,18 +225,133 @@ public class LexerService extends BaseAuth{
     /**
      * 整个文章替换
      */
-    public String replaceParagraph(TextDto text,String accessToken) {
+    public ParagraphOut replaceParagraph(TextDto text,String accessToken) throws ExecutionException, InterruptedException {
         log.info("正在进行文章替换 ...");
         checkText(text);
         checkAccessToken(accessToken);
         // 文章
         String article = text.getText();
+        List<String> paragraphs = sliceArticle(article);
+        int size = paragraphs.size();
+        if (size>35) {
+            // 超过 3500 句, 直接抛异常
+            throw new BizException(CommonEnum.TEXT_TO_LONG);
+        }
 
+        StringBuilder sb = new StringBuilder();
+        int replaceTotal = 0;
+        int threadCount = 0;
+        if (size>0) {
+            log.info("开启多线程, 批量分析, 检测, 替换...");
+            // 有多少个段落, 则开多少线程, 最多不能超过35个线程
+            for (int i = 0; i < size; i++) {
+                Future<ArticleReplaceOut> asyncResult = getReplaceResult(paragraphs.get(i),accessToken);
+                ArticleReplaceOut arOut =asyncResult.get();
 
+                sb.append(arOut.getReplaceText());
 
-        return null;
+                replaceTotal+=arOut.getReplaceCount();
+                if (asyncResult.isDone()) {
+                    threadCount ++;
+                }
+            }
+        }
+
+        while (threadCount < size) {
+            Thread.sleep(100);
+        }
+
+        return new ParagraphOut(sb.toString(),replaceTotal);
     }
 
+    /**
+     * 异步多线程处理
+     */
+    @Async
+    private Future<ArticleReplaceOut> getReplaceResult(String sentence,String accessToken) {
+        log.info("线程启动, 正在进行文本分析替换检测...");
+
+        // 替换词数统计
+        int total = 0;
+        // 组合段落
+        StringBuilder sb = new StringBuilder();
+        // 逐句分析替换 切分的句子默认没有带"。"号
+        String[] sen = sentence.split(AiConstant.PERIOD);
+        for (String s : sen) {
+            ArticleReplaceOut arOut = new ArticleReplaceOut();
+            // 分析词义
+            LexerOut lo = analyseLexer(new TextDto(s),accessToken);
+            // 替换结果
+            ReplaceTextOut reOut = sliceSentence(lo);
+            String result = reOut.getReplace();
+            total += reOut.getReplaceCount();
+            // DNN语言模型检测
+            DnnModelOut out = analyseDnnModel(new TextDto(result),accessToken);
+            if (out == null||StrUtil.isBlank(out.getText())) {
+                sb.append(s);
+                if (!s.endsWith("。")) {
+                    sb.append("。");
+                }
+
+            }else {
+                sb.append(result);
+                if (!s.endsWith("。")) {
+                    sb.append("。");
+                }
+            }
+        }
+
+        ArticleReplaceOut arOut = new ArticleReplaceOut();
+        arOut.setSourceText(sentence);
+        arOut.setReplaceText(sb.toString());
+        arOut.setReplaceCount(total);
+        // 返回替换结果
+        return new AsyncResult<>(arOut);
+    }
+
+    /**
+     * 将文章进行切割
+     * @param article 文章
+     */
+    private List<String> sliceArticle(String article) {
+        List<String> sentenceList = new ArrayList<>();
+        // 超过范围, 进行切割
+        if (article.length()>AiConstant.MAX_LENGTH) {
+            // 将文章全部切割成句子
+            String[] sentences = article.split(AiConstant.PERIOD);
+            // 获取句子总数
+            int len = sentences.length;
+            // 计数器
+            int count = 0;
+            // 计算总数
+            int title = 0;
+            // 段落拼接
+            StringBuilder sb = new StringBuilder();
+            for (String sentence : sentences) {
+                sb.append(sentence);
+                if (count == 10) {
+                    // 存储切分的段落
+                    sentenceList.add(sb.toString());
+                    // 重新赋值
+                    sb = new StringBuilder();
+                    // 计数器清零
+                    count = 0;
+                }
+                if (title == len) {
+                    sentenceList.add(sb.toString());
+                }
+
+                title++;
+                count++;
+
+            }
+
+        }else {
+            sentenceList.add(article);
+        }
+
+        return sentenceList;
+    }
 
     /**
      * 校验文本
@@ -238,6 +366,9 @@ public class LexerService extends BaseAuth{
         String article = text.getText();
         if (StrUtil.isBlank(article)) {
             throw new BizException(CommonEnum.TEXT_NULL);
+        }
+        if (article.length()>100000) {
+            throw new BizException(CommonEnum.TEXT_TO_LONG);
         }
         return true;
     }

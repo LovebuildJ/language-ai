@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * 词义分析控制层
  * Created by 尘心 on 2020/9/19 0019.
@@ -86,6 +88,19 @@ public class LexerController extends BaseController{
         return R.success(out.getText()==null?para.getParams():out.getText());
     }
 
+    @ApiOperation("文章AI伪原创")
+    @PostMapping("/aiArticle")
+    public R articleReplace(@RequestBody ReqBody<TextDto> para) {
+        try {
+            return R.success(lexerService.replaceParagraph(para.getParams(),getAccessToken()));
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return R.error(CommonEnum.AI_ARTICLE_ERROR);
+    }
 
     private DnnModelOut getPpl(LexerOut lexerOut,String accessToken) {
         if (lexerOut == null) {
@@ -95,7 +110,7 @@ public class LexerController extends BaseController{
             throw new BizException(CommonEnum.TOKEN_NOT_FOUND);
         }
 
-        String replaceResult = lexerService.sliceSentence(lexerOut);
+        String replaceResult = lexerService.sliceSentence(lexerOut).getReplace();
         if (StrUtil.isNotBlank(replaceResult)) {
             // DNN语言模型计算通顺度
             return lexerService.analyseDnnModel(new TextDto(replaceResult),accessToken);

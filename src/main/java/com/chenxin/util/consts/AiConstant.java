@@ -27,4 +27,10 @@ public final class AiConstant {
 
     /** 键值模糊查询限制条数 */
     public static final int KEYS_COUNT = 20;
+
+    /** 文章长度边界 */
+    public static final int MAX_LENGTH = 2000;
+
+    /** 句号, 切割标准 */
+    public static final String PERIOD = "。";
 }
