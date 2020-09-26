@@ -79,13 +79,13 @@
                             <el-card class="box-card-min">
                                 <div slot="header" class="clearfix">
                                     <span>词义分析</span>
-                                    <el-button style="float: right; padding: 3px 0" type="text">开始分析</el-button>
+                                    <el-button style="float: right; padding: 3px 0" type="text" v-on:click="wordAnalyse">开始分析</el-button>
                                 </div>
                                 <h5>输入文本：</h5>
                                 <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="textarea">
                                 </el-input>
                                 <h5>分析结果：</h5>
-                                <el-input type="textarea" :rows="2" v-model="showarea">
+                                <el-input type="textarea" :rows="2" v-model="showarea" id="tt1">
                                 </el-input>
                             </el-card>
                         </el-col>
@@ -150,6 +150,7 @@
 <script src="js/vue.js"></script>
 <!-- import JavaScript -->
 <script src="js/index.js"></script>
+<script src="js/jquery-3.5.1.min.js"></script>
 <script>
     new Vue({
         el: '#app',
@@ -158,7 +159,7 @@
                 visible: false,
                 textarea: '',
                 showarea: '',
-                
+
                 textarea2: '',
                 showarea2: '',
 
@@ -170,6 +171,75 @@
 
                 textarea5: '',
                 showarea5: ''
+            }
+        },
+        methods: {
+            // 词义分析
+            wordAnalyse: function () {
+                console.log("词义分析...", this.textarea);
+                // 请求参数
+                var data = {
+                    "appName": "",
+                    "params": {
+                        "text": `${this.textarea}`
+                    },
+                    "sign": "",
+                    "timestamp": "",
+                    "version": ""
+                };
+                console.log("data",data);
+                if (this.textarea === '') {
+                    this.$message.error('输入的文本不能为空!');
+                } else {
+                    // 发送请求获取数据
+                    $.ajax({
+                        //请求方式
+                        type : "POST",
+                        //请求的媒体类型
+                        contentType: "application/json;charset=UTF-8",
+//                        dataType: "json",
+                        //请求地址
+                        url : "/ai/lexer/lexerText",
+                        //数据，json字符串
+                        data : JSON.stringify(data),
+                        //请求成功
+                        success : function(result) {
+                            console.log(result.result.items);
+                            var items = result.result.items;
+                            var content = "";
+                            for(var i = 0;i<items.length;i++) {
+                               content+= (items[i].item+"  ");
+                            }
+                            // 回显数据
+                            $("#tt1").val(content);
+                        },
+                        //请求失败，包含具体的错误信息
+                        error : function(e){
+                            console.log(e.status);
+                            console.log(e.responseText);
+                        }
+                    });
+                }
+            },
+            // 词语相似度分析
+            wordSimilar: function () {
+
+            },
+            // DNN语言模型计算
+            dnn: function () {
+
+            },
+            // 清空按钮事件
+            cls: function () {
+                console.log("用户点击了清空按钮");
+            },
+            // AI生成事件
+            sub: function () {
+                console.log("用户点击了AI生成按钮");
+            },
+            // 复制文本
+            copy: function () {
+                console.log("用户点击了复制按钮");
             }
         }
     })
