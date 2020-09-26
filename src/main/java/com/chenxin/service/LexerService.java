@@ -243,18 +243,36 @@ public class LexerService extends BaseAuth{
         int threadCount = 0;
         if (size>0) {
             log.info("开启多线程, 批量分析, 检测, 替换...");
-            // 有多少个段落, 则开多少线程, 最多不能超过35个线程
-            for (int i = 0; i < size; i++) {
-                Future<ArticleReplaceOut> asyncResult = getReplaceResult(paragraphs.get(i),accessToken);
-                ArticleReplaceOut arOut =asyncResult.get();
+            if (size == 1) {
+                // 一个段落, 则分多个句子进行。 一个句子一个线程
+                String p =  paragraphs.get(0);
+                String[] sentence = p.split(AiConstant.PERIOD);
+                for (String s : sentence) {
+                    Future<ArticleReplaceOut> asyncResult = getReplaceResult(s,accessToken);
+                    ArticleReplaceOut arOut =asyncResult.get();
 
-                sb.append(arOut.getReplaceText());
+                    sb.append(arOut.getReplaceText());
 
-                replaceTotal+=arOut.getReplaceCount();
-                if (asyncResult.isDone()) {
-                    threadCount ++;
+                    replaceTotal+=arOut.getReplaceCount();
+                    if (asyncResult.isDone()) {
+                        threadCount ++;
+                    }
+                }
+            }else if (size>1) {
+                // 有多少个段落, 则开多少线程, 最多不能超过35个线程
+                for (int i = 0; i < size; i++) {
+                    Future<ArticleReplaceOut> asyncResult = getReplaceResult(paragraphs.get(i),accessToken);
+                    ArticleReplaceOut arOut =asyncResult.get();
+
+                    sb.append(arOut.getReplaceText());
+
+                    replaceTotal+=arOut.getReplaceCount();
+                    if (asyncResult.isDone()) {
+                        threadCount ++;
+                    }
                 }
             }
+
         }
 
         while (threadCount < size) {
@@ -265,7 +283,7 @@ public class LexerService extends BaseAuth{
     }
 
     /**
-     * 异步多线程处理
+     * 异步多线程处理段落
      */
     @Async
     private Future<ArticleReplaceOut> getReplaceResult(String sentence,String accessToken) {
@@ -278,7 +296,6 @@ public class LexerService extends BaseAuth{
         // 逐句分析替换 切分的句子默认没有带"。"号
         String[] sen = sentence.split(AiConstant.PERIOD);
         for (String s : sen) {
-            ArticleReplaceOut arOut = new ArticleReplaceOut();
             // 分析词义
             LexerOut lo = analyseLexer(new TextDto(s),accessToken);
             // 替换结果

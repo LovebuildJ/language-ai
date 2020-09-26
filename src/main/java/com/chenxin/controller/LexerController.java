@@ -5,10 +5,7 @@ import com.chenxin.base.BaseController;
 import com.chenxin.exception.BizException;
 import com.chenxin.model.R;
 import com.chenxin.model.ReqBody;
-import com.chenxin.model.dto.DnnModelOut;
-import com.chenxin.model.dto.LexerOut;
-import com.chenxin.model.dto.SimilarWordDto;
-import com.chenxin.model.dto.TextDto;
+import com.chenxin.model.dto.*;
 import com.chenxin.service.LexerService;
 import com.chenxin.util.CommonEnum;
 import com.chenxin.util.consts.AiConstant;
@@ -79,13 +76,8 @@ public class LexerController extends BaseController{
         }
 
         // DNN语言模型校验
-        DnnModelOut out = getPpl(lexerOut,accessToken);
-        if (out == null) {
-            // DNN计算失败, 直接返回原文本
-            return R.success(para.getParams().getText());
-        }
-
-        return R.success(out.getText()==null?para.getParams():out.getText());
+        ParagraphOut out = getPpl(lexerOut,accessToken);
+        return R.success(out);
     }
 
     @ApiOperation("文章AI伪原创")
@@ -102,7 +94,7 @@ public class LexerController extends BaseController{
         return R.error(CommonEnum.AI_ARTICLE_ERROR);
     }
 
-    private DnnModelOut getPpl(LexerOut lexerOut,String accessToken) {
+    private ParagraphOut getPpl(LexerOut lexerOut,String accessToken) {
         if (lexerOut == null) {
             throw new BizException(CommonEnum.PARAM_ERROR);
         }
@@ -110,12 +102,14 @@ public class LexerController extends BaseController{
             throw new BizException(CommonEnum.TOKEN_NOT_FOUND);
         }
 
-        String replaceResult = lexerService.sliceSentence(lexerOut).getReplace();
+        ReplaceTextOut rto = lexerService.sliceSentence(lexerOut);
+        String replaceResult = rto.getReplace();
         if (StrUtil.isNotBlank(replaceResult)) {
             // DNN语言模型计算通顺度
-            return lexerService.analyseDnnModel(new TextDto(replaceResult),accessToken);
+            DnnModelOut out =  lexerService.analyseDnnModel(new TextDto(replaceResult),accessToken);
+            return new ParagraphOut(out.getText(),rto.getReplaceCount());
         }
 
-        return null;
+        return new ParagraphOut(lexerOut.getText(),0);
     }
 }
