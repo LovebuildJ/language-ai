@@ -38,7 +38,12 @@ baidu:
 测试版本未作校验, 所有参数默认为空即可。
 
 ## 项目截图
+#### 【首页】
+![输入图片说明](https://github.com/LovebuildJ/language-ai/tree/master/images/index.png)
 
+![输入图片说明](https://github.com/LovebuildJ/language-ai/tree/master/images/index-main.png)
+
+![输入图片说明](https://github.com/LovebuildJ/language-ai/tree/master/images/index-footer.png)
 ## 源码目录详解
 ```
 language-ai
