@@ -36,6 +36,9 @@ baidu:
 
 
 测试版本未作校验, 所有参数默认为空即可。
+
+## 项目截图
+
 【词义分析】
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0927/191620_ba156fb1_1865362.png "analyse.png")
@@ -54,9 +57,11 @@ baidu:
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0927/191645_3ef9e211_1865362.png "ai-result.png")
 
 【BootstrapSwaggerUI在线文档】
+
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0927/191722_56c9f043_1865362.png "swagger.png")
 
 【首页】
+
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0927/191429_8f7d6111_1865362.png "index.png")
 
 ---
