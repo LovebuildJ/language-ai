@@ -36,14 +36,38 @@ baidu:
 
 
 测试版本未作校验, 所有参数默认为空即可。
+【词义分析】
 
-## 项目截图
-#### 【首页】
-![输入图片说明](https://github.com/LovebuildJ/language-ai/tree/master/images/index.png)
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0927/191620_ba156fb1_1865362.png "analyse.png")
 
-![输入图片说明](https://github.com/LovebuildJ/language-ai/tree/master/images/index-main.png)
+【词义相似度计算】
 
-![输入图片说明](https://github.com/LovebuildJ/language-ai/tree/master/images/index-footer.png)
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0927/191628_5664dc36_1865362.png "similar.png")
+
+【DNN语言模型计算】
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0927/191637_204a72ed_1865362.png "dnn.png")
+
+
+【AI伪原创】
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0927/191645_3ef9e211_1865362.png "ai-result.png")
+
+【BootstrapSwaggerUI在线文档】
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0927/191722_56c9f043_1865362.png "swagger.png")
+
+【首页】
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0927/191429_8f7d6111_1865362.png "index.png")
+
+---
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0927/191505_1b04fde2_1865362.png "index-main.png")
+
+---
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0927/191520_7a1a8248_1865362.png "index-footer.png")
+
+
 ## 源码目录详解
 ```
 language-ai
