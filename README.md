@@ -15,7 +15,9 @@ baidu:
 如何获取? 输入`https://ai.baidu.com/tech/nlp_basic`, 点击立即使用, 根据提示一步一步完成即可获得。
 有免费调用额度, 对于个人而言已经够了。
 
-3. 加载词库到redis中, 项目启动后, 发送post请求`http://localhost:8080/ai/command/initRedis` 初始化redis即可。该操作会将库清空再初始化,请悉知
+3.启动项目, 前端页面访问` http://localhost:8080/ai`,swagger文档访问`http://localhost:8080/ai/doc.html`
+
+4. 加载词库到redis中, 项目启动后, 发送post请求`http://localhost:8080/ai/command/initRedis` 初始化redis即可。该操作会将库清空再初始化,请悉知
 
 请求参数格式如下：
 ```json
@@ -30,6 +32,8 @@ baidu:
 	"version": ""
 }
 ```
+也可直接使用swagger执行接口初始化
+
 
 测试版本未作校验, 所有参数默认为空即可。
 
