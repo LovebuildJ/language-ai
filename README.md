@@ -1,6 +1,6 @@
 # language-ai
 文章AI伪原创,文章自动生成,NLP,自然语言技术处理,DNN语言模型,词义相似度分析。全网首个AI伪原创开源应用类项目。
-
+点击右侧about内的链接极速体验!
 ## 快速开始
 1. 环境准备：`JDK1.8`, `maven3.6+`, `redis`
 2. 在 `application.yml` 中配置百度AI的相关信息
