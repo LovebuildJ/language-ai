@@ -4,17 +4,14 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.chenxin.base.BaseAuth;
-import com.chenxin.base.BaseService;
 import com.chenxin.exception.BizException;
 import com.chenxin.model.bo.LexerItemBo;
 import com.chenxin.model.dto.*;
 import com.chenxin.util.CommonEnum;
-import com.chenxin.util.auth.AuthContainer;
 import com.chenxin.util.consts.AiConstant;
 import com.chenxin.util.consts.LexerConstants;
 import com.chenxin.util.http.BaiDuUrl;
 import com.chenxin.util.http.HttpHeader;
-import com.chenxin.util.nlp.SimilarWords;
 import com.hankcs.hanlp.dictionary.CoreSynonymDictionary;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -286,7 +283,7 @@ public class LexerService extends BaseAuth{
      * 异步多线程处理段落
      */
     @Async
-    private Future<ArticleReplaceOut> getReplaceResult(String sentence,String accessToken) {
+    public Future<ArticleReplaceOut> getReplaceResult(String sentence, String accessToken) {
         log.info("线程启动, 正在进行文本分析替换检测...");
 
         // 替换词数统计
