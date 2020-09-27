@@ -47,6 +47,6 @@ spring:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 baidu:
-  appid: 22686292
-  appkey: my8ILKfyTfLIUgVvneG8zRDw
-  secret: zxLVeEvdXRVjFGj0mTvEDg1U0WiIDWMV
+  appid: your appid
+  appkey: your appkey
+  secret: your secret
