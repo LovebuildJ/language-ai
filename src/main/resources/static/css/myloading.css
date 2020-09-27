@@ -1,0 +1,26 @@
+.myloading {
+    display: flex;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+    background-color: rgba(255, 255, 255, 0.7);
+    justify-content: space-around;
+    align-items: center;
+}
+.glyphicon-refresh {
+    font-size: 32px;
+    animation: myloading linear 2s infinite;
+}
+@keyframes myloading {
+    from {
+        transform: rotate(0deg)
+    }
+
+    to {
+        transform: rotate(360deg)
+    }
+
+}

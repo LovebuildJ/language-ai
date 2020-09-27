@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <!-- import CSS -->
     <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/fonts/element-icons.woff">
     <style>
         .text {
             font-size: 14px;
@@ -35,117 +36,132 @@
             float: right;
             margin: 10px;
         }
+
+        .el-textarea__inner {
+            margin: 10px;
+        }
+        .el-card__body {
+            margin: 10px;
+        }
+        .el-icon-loading:before {
+            font-size: 47px;
+            color: #3a8ee6;
+        }
     </style>
 </head>
 
 <body>
-    <div id="app">
-        <el-container>
-            <el-header>
+<div id="app">
+    <el-container>
+        <el-header>
+            <el-card class="box-card-title">
+                <h4>LanguageAi项目简介</h4>
+                <span>项目地址：<el-link type="primary">GitHub</el-link>, 开源不易,帮忙点个Star吧~</span>
+                <p>
+                    项目介绍：本项目集成多个NLP优秀项目, 搭配使用。 分词使用百度AI 自然语言处理技术中的词义分析技术, 词义相似度
+                    使用HanLP项目计算同义词距离! 词库存储与读取采用Redis数据库,词库检索性能急速攀升。
+                </p>
+                <p>
+                    项目使命：做人工智能,NLP理论落地应用类开源先驱, 解放媒体工作者,。使用人工智能更好的服务社会。
+                </p>
+                <p>
+                    作者介绍：尘心, 从事一线开发, 对人工智能, 大数据开发，微服务开发等有浓厚的兴趣。
+                </p>
+            </el-card>
+            <br>
+            <el-card class="box-card-title">
+                <h4>LanguageAi项目进度</h4>
+                <el-steps :active="6" align-center>
+                    <el-step title="应用诞生" description="技术选型,NLP理论项目选型"></el-step>
+                    <el-step title="接入百度AI" description="只需简单配置, 一步接入百度AI"></el-step>
+                    <el-step title="智能分词" description="提供分词、词性标注、命名实体识别三大功能。"></el-step>
+                    <el-step title="词义相似度" description="依托海量优质数据和深度神经网络技术，通过词语向量化来计算两个词之间的相似度"></el-step>
+                    <el-step title="DNN语言模型" description="依托海量优质数据和深度神经网络技术，判断一句话是否符合语言表达习惯，帮助您实现文本分析、纠错、对话等多种语义应用">
+                    </el-step>
+                    <el-step title="文本变脸(AI伪原创)" description="一键实现文章AI伪原创"></el-step>
+                    <el-step title="官网发布" description="用户可直接在官网在线使用language-ai"></el-step>
+                    <el-step title="打造生态" description="语言处理技术,语言处理应用,文本审核,智能招聘,机器翻译"></el-step>
+                    <el-step title="开放平台" description="打造应用开放平台，实现用户一键接入，极大减少用户开发量"></el-step>
+                </el-steps>
+            </el-card>
+            <el-divider content-position="center">以下为测试版体验区</el-divider>
+            <el-main>
+                <el-row>
+                    <el-col :span="8">
+                        <el-card class="box-card-min">
+                            <div slot="header" class="clearfix">
+                                <span>词义分析</span>
+                                <el-button style="float: right; padding: 3px 0" type="text" v-on:click="wordAnalyse">开始分析</el-button>
+                            </div>
+                            <h5>输入文本：</h5>
+                            <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="textarea">
+                            </el-input>
+                            <h5>分析结果：</h5>
+                            <el-input type="textarea" :rows="2" v-model="showarea" id="tt1">
+                            </el-input>
+                        </el-card>
+                    </el-col>
+
+                    <el-col :span="8">
+                        <el-card class="box-card-min">
+                            <div slot="header" class="clearfix">
+                                <span>词义相似度</span>
+                                <el-button style="float: right; padding: 3px 0" type="text" v-on:click="wordSimilar">开始分析</el-button>
+                            </div>
+                            <h5>输入文本：</h5>
+                            <el-input type="textarea" :rows="1" placeholder="源词语" v-model="source">
+                            </el-input>
+                            <el-input type="textarea" :rows="1" placeholder="目标词语" v-model="target">
+                            </el-input>
+                            <h5>分析结果：</h5>
+                            <el-input type="textarea" :rows="2" v-model="showarea2" id="tt2">
+                            </el-input>
+                        </el-card>
+                    </el-col>
+
+                    <el-col :span="8">
+                        <el-card class="box-card-min">
+                            <div slot="header" class="clearfix">
+                                <span>DNN语言模型</span>
+                                <el-button style="float: right; padding: 3px 0" type="text" v-on:click="dnn">开始分析</el-button>
+                            </div>
+                            <h5>输入文本：</h5>
+                            <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="textarea3">
+                            </el-input>
+                            <h5>分析结果：</h5>
+                            <el-input type="textarea" :rows="2" v-model="showarea3" id="tt3">
+                            </el-input>
+                        </el-card>
+                    </el-col>
+
+                </el-row>
+                <el-divider content-position="center">以下为文本AI伪原创</el-divider>
                 <el-card class="box-card-title">
-                    <h4>LanguageAi项目简介</h4>
-                    <span>项目地址：<el-link type="primary">GitHub</el-link>, 开源不易,帮忙点个Star吧~</span>
-                    <p>
-                        项目介绍：本项目集成多个NLP优秀项目, 搭配使用。 分词使用百度AI 自然语言处理技术中的词义分析技术, 词义相似度
-                        使用HanLP项目计算同义词距离! 词库存储与读取采用Redis数据库,词库检索性能急速攀升。
-                    </p>
-                    <p>
-                        项目使命：做人工智能,NLP理论落地应用类开源先驱, 解放媒体工作者,。使用人工智能更好的服务社会。
-                    </p>
-                    <p>
-                        作者介绍：尘心, 从事一线开发, 对人工智能, 大数据开发，微服务开发等有浓厚的兴趣。
-                    </p>
+                    <h5>
+                        输入原文本(建议输入2000字以内, 字数过多等待时间越长)：
+                    </h5>
+                    <el-input type="textarea" :rows="3" placeholder="请输入内容" v-model="textarea4" style="margin: 10px;" id="aiArea">
+                    </el-input>
+                    <div class="btns">
+                        <el-button type="info" v-on:click="cls">清空</el-button>
+                        <el-button type="primary" v-on:click="sub">AI伪原创</el-button>
+                    </div>
+                    <h5>
+                        AI伪原创结果:
+                    </h5>
+                    <el-input type="textarea" :rows="3" placeholder="" v-model="textarea5" style="margin: 10px;" id="tt4">
+                    </el-input>
+                    <span id="aiTip" style="color: red"></span>
+                    <div class="btns">
+                        <el-button type="success" v-on:click="copy">复制文本</el-button>
+                    </div>
                 </el-card>
-                <br>
-                <el-card class="box-card-title">
-                    <h4>LanguageAi项目进度</h4>
-                    <el-steps :active="6" align-center>
-                        <el-step title="应用诞生" description="技术选型,NLP理论项目选型"></el-step>
-                        <el-step title="接入百度AI" description="只需简单配置, 一步接入百度AI"></el-step>
-                        <el-step title="智能分词" description="提供分词、词性标注、命名实体识别三大功能。"></el-step>
-                        <el-step title="词义相似度" description="依托海量优质数据和深度神经网络技术，通过词语向量化来计算两个词之间的相似度"></el-step>
-                        <el-step title="DNN语言模型" description="依托海量优质数据和深度神经网络技术，判断一句话是否符合语言表达习惯，帮助您实现文本分析、纠错、对话等多种语义应用">
-                        </el-step>
-                        <el-step title="文本变脸(AI伪原创)" description="一键实现文章AI伪原创"></el-step>
-                        <el-step title="官网发布" description="用户可直接在官网在线使用language-ai"></el-step>
-                        <el-step title="打造生态" description="语言处理技术,语言处理应用,文本审核,智能招聘,机器翻译"></el-step>
-                        <el-step title="开放平台" description="打造应用开放平台，实现用户一键接入，极大减少用户开发量"></el-step>
-                    </el-steps>
-                </el-card>
-                <el-divider content-position="center">以下为测试版体验区</el-divider>
-                <el-main>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-card class="box-card-min">
-                                <div slot="header" class="clearfix">
-                                    <span>词义分析</span>
-                                    <el-button style="float: right; padding: 3px 0" type="text" v-on:click="wordAnalyse">开始分析</el-button>
-                                </div>
-                                <h5>输入文本：</h5>
-                                <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="textarea">
-                                </el-input>
-                                <h5>分析结果：</h5>
-                                <el-input type="textarea" :rows="2" v-model="showarea" id="tt1">
-                                </el-input>
-                            </el-card>
-                        </el-col>
+            </el-main>
+    </el-container>
 
-                        <el-col :span="8">
-                            <el-card class="box-card-min">
-                                <div slot="header" class="clearfix">
-                                    <span>词义相似度</span>
-                                    <el-button style="float: right; padding: 3px 0" type="text">开始分析</el-button>
-                                </div>
-                                <h5>输入文本：</h5>
-                                <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="textarea2">
-                                </el-input>
-                                <h5>分析结果：</h5>
-                                <el-input type="textarea" :rows="2" v-model="showarea2">
-                                </el-input>
-                            </el-card>
-                        </el-col>
-
-                        <el-col :span="8">
-                            <el-card class="box-card-min">
-                                <div slot="header" class="clearfix">
-                                    <span>DNN语言模型</span>
-                                    <el-button style="float: right; padding: 3px 0" type="text">开始分析</el-button>
-                                </div>
-                                <h5>输入文本：</h5>
-                                <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="textarea3">
-                                </el-input>
-                                <h5>分析结果：</h5>
-                                <el-input type="textarea" :rows="2" v-model="showarea3">
-                                </el-input>
-                            </el-card>
-                        </el-col>
-
-                    </el-row>
-                    <el-divider content-position="center">以下为文本AI伪原创</el-divider>
-                    <el-card class="box-card-title">
-                        <h5>
-                            输入原文本(建议输入2000字以内, 字数过多等待时间越长)：
-                        </h5>
-                        <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model="textarea4" style="margin: 10px;">
-                        </el-input>
-                        <div class="btns">
-                            <el-button type="info">清空</el-button>
-                            <el-button type="primary">AI伪原创</el-button>
-                        </div>
-                        <h5>
-                            AI伪原创结果:
-                        </h5>
-                        <el-input type="textarea" :rows="4" placeholder="" v-model="textarea5" style="margin: 10px;">
-                        </el-input>
-                        <div class="btns">
-                            <el-button type="success">复制文本</el-button>
-                        </div>
-                    </el-card>
-                </el-main>
-        </el-container>
-
-    </div>
+</div>
 </body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <!-- import Vue before Element -->
 <script src="js/vue.js"></script>
 <!-- import JavaScript -->
@@ -160,7 +176,8 @@
                 textarea: '',
                 showarea: '',
 
-                textarea2: '',
+                source: '',
+                target: '',
                 showarea2: '',
 
                 textarea3: '',
@@ -191,55 +208,173 @@
                 if (this.textarea === '') {
                     this.$message.error('输入的文本不能为空!');
                 } else {
-                    // 发送请求获取数据
-                    $.ajax({
-                        //请求方式
-                        type : "POST",
-                        //请求的媒体类型
-                        contentType: "application/json;charset=UTF-8",
-//                        dataType: "json",
-                        //请求地址
-                        url : "/ai/lexer/lexerText",
-                        //数据，json字符串
-                        data : JSON.stringify(data),
-                        //请求成功
-                        success : function(result) {
-                            console.log(result.result.items);
-                            var items = result.result.items;
+                    console.log(this.$notify);
+
+
+                    let that = this;
+                    that.$notify({
+                        title: '数据加载中',
+                        dangerouslyUseHTMLString: true,
+                        message: `<i class="el-icon-loading"></i>`
+                    });
+                    axios.post('/ai/lexer/lexerText', data)
+                        .then(function (response) {
+                            var items = response.data.result.items;
                             var content = "";
                             for(var i = 0;i<items.length;i++) {
-                               content+= (items[i].item+"  ");
+                                content+= (items[i].item+"  ");
                             }
-                            // 回显数据
+                            // 数据回显
+                            that.showarea = content;
                             $("#tt1").val(content);
-                        },
-                        //请求失败，包含具体的错误信息
-                        error : function(e){
-                            console.log(e.status);
-                            console.log(e.responseText);
-                        }
-                    });
+                            // 关闭通知
+                            that.$notify.closeAll();
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
                 }
             },
             // 词语相似度分析
             wordSimilar: function () {
-
+                // 请求参数
+                var data = {
+                    "appName": "",
+                    "params": {
+                        "source": `${this.source}`,
+                        "target": `${this.target}`
+                    },
+                    "sign": "",
+                    "timestamp": "",
+                    "version": ""
+                };
+                if (this.target === ''||this.target === '') {
+                    this.$message.error('输入的词语不能为空!');
+                } else {
+                    let that = this;
+                    that.$notify({
+                        title: '数据加载中',
+                        dangerouslyUseHTMLString: true,
+                        message: `<i class="el-icon-loading"></i>`
+                    });
+                    axios.post('/ai/lexer/wordSimilar', data)
+                        .then(function (response) {
+                            console.log(response);
+                            var score = response.data.result.score;
+                            this.showarea2 = score;
+                            // 数据回显
+                            $("#tt2").val("词语相似度得分为："+score);
+                            // 关闭通知
+                            that.$notify.closeAll();
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                }
             },
+
             // DNN语言模型计算
             dnn: function () {
+                var data = {
+                    "appName": "",
+                    "params": {
+                        "text": `${this.textarea3}`
+                    },
+                    "sign": "",
+                    "timestamp": "",
+                    "version": ""
+                };
+                if (this.textarea3 === '') {
+                    this.$message.error('输入的文本不能为空!');
+                } else {
+                    let that = this;
+                    that.$notify({
+                        title: '数据加载中',
+                        dangerouslyUseHTMLString: true,
+                        message: `<i class="el-icon-loading"></i>`
+                    });
+                    axios.post('/ai/lexer/dnn', data)
+                        .then(function (response) {
+                            console.log(response);
+                            // 获取具体分词结果
+                            var items = response.data.result.items;
+                            // DNN语言模型得分
+                            var ppl = response.data.result.ppl;
+                            // 具体得分
+                            var content = "";
+                            for(var i = 0;i<items.length;i++) {
+                                content+= ("{"+items[i].word+":"+items[i].prob+"}");
+                            }
 
+                            $("#tt3").val("具体得分："+content+"\n"+"总得分："+ppl);
+                            // 关闭通知
+                            that.$notify.closeAll();
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                }
             },
+
             // 清空按钮事件
             cls: function () {
-                console.log("用户点击了清空按钮");
+                $("#aiArea").val("");
+                $("#tt4").val("");
+                $("#aiTip").text("");
             },
+
             // AI生成事件
             sub: function () {
-                console.log("用户点击了AI生成按钮");
+                var data = {
+                    "appName": "",
+                    "params": {
+                        "text": `${this.textarea4}`
+                    },
+                    "sign": "",
+                    "timestamp": "",
+                    "version": ""
+                };
+                if (this.textarea4 === '') {
+                    this.$message.error('输入的文本不能为空!');
+                } else {
+                    let that = this;
+                    that.$notify({
+                        title: '数据加载中',
+                        dangerouslyUseHTMLString: true,
+                        message: `<i class="el-icon-loading"></i>`
+                    });
+                    axios.post('/ai/lexer/aiArticle', data)
+                        .then(function (response) {
+                            console.log(response);
+                            // 替换结果
+                            var result = response.data.result.result;
+                            // 替换个数
+                            var total = response.data.result.total;
+                            $("#tt4").val("替换结果："+result);
+                            $("#aiTip").text("替换词数："+total);
+                            // 关闭通知
+                            that.$notify.closeAll();
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                }
             },
             // 复制文本
             copy: function () {
-                console.log("用户点击了复制按钮");
+                var str = $("#tt4").val();
+                var save = function(e) {
+                    e.clipboardData.setData('text/plain', str);
+                    e.preventDefault();
+                };
+                document.addEventListener('copy', save);
+                document.execCommand('copy');
+                document.removeEventListener('copy', save);
+                this.$notify({
+                    title: '成功',
+                    message: '文本已复制!',
+                    type: 'success'
+                });
             }
         }
     })
