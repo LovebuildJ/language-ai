@@ -215,6 +215,7 @@
                     that.$notify({
                         title: '数据加载中',
                         dangerouslyUseHTMLString: true,
+                        duration: 0,
                         message: `<i class="el-icon-loading"></i>`
                     });
                     axios.post('/ai/lexer/lexerText', data)
@@ -255,6 +256,7 @@
                     that.$notify({
                         title: '数据加载中',
                         dangerouslyUseHTMLString: true,
+                        duration: 0,
                         message: `<i class="el-icon-loading"></i>`
                     });
                     axios.post('/ai/lexer/wordSimilar', data)
@@ -291,6 +293,7 @@
                     that.$notify({
                         title: '数据加载中',
                         dangerouslyUseHTMLString: true,
+                        duration: 0,
                         message: `<i class="el-icon-loading"></i>`
                     });
                     axios.post('/ai/lexer/dnn', data)
@@ -341,6 +344,7 @@
                     that.$notify({
                         title: '数据加载中',
                         dangerouslyUseHTMLString: true,
+                        duration: 0,
                         message: `<i class="el-icon-loading"></i>`
                     });
                     axios.post('/ai/lexer/aiArticle', data)
